@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient'
 
-// Configuración dinámica: Usa la variable de Vercel en producción
-// En local, si no existe la variable, intentará usar el proxy relativo
+// Usamos la variable de Vercel. 
+// Si la variable es "https://.../api", este código se asegura de no duplicarlo.
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 async function getHeaders() {
@@ -20,20 +20,30 @@ async function getHeaders() {
     return headers
 }
 
+// Función auxiliar para limpiar la URL y evitar el error /api/api
+const buildUrl = (endpoint) => {
+    let base = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+    let path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+
+    // Si la base ya incluye /api y el path también, quitamos uno
+    if (base.endsWith('/api') && path.startsWith('/api/')) {
+        path = path.replace('/api', '');
+    }
+
+    return `${base}${path}`;
+};
+
 export const api = {
     get: async (endpoint) => {
         const headers = await getHeaders()
-        // Eliminamos el slash extra si endpoint ya trae uno
-        const url = `${API_URL}${endpoint}`.replace(/([^:]\/)\/+/g, "$1")
-        const response = await fetch(url, { headers })
+        const response = await fetch(buildUrl(endpoint), { headers })
         if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`)
         return await response.json()
     },
 
     post: async (endpoint, body) => {
         const headers = await getHeaders()
-        const url = `${API_URL}${endpoint}`.replace(/([^:]\/)\/+/g, "$1")
-        const response = await fetch(url, {
+        const response = await fetch(buildUrl(endpoint), {
             method: 'POST',
             headers,
             body: JSON.stringify(body),
@@ -47,8 +57,7 @@ export const api = {
 
     put: async (endpoint, body) => {
         const headers = await getHeaders()
-        const url = `${API_URL}${endpoint}`.replace(/([^:]\/)\/+/g, "$1")
-        const response = await fetch(url, {
+        const response = await fetch(buildUrl(endpoint), {
             method: 'PUT',
             headers,
             body: JSON.stringify(body),
@@ -59,8 +68,7 @@ export const api = {
 
     delete: async (endpoint) => {
         const headers = await getHeaders()
-        const url = `${API_URL}${endpoint}`.replace(/([^:]\/)\/+/g, "$1")
-        const response = await fetch(url, {
+        const response = await fetch(buildUrl(endpoint), {
             method: 'DELETE',
             headers,
         })
