@@ -153,10 +153,10 @@ export default function Dashboard() {
                             <span className="text-[8px] sm:text-[9px] font-black text-zinc-500 uppercase tracking-tighter">Tendencia Neural</span>
                         </div>
                     </div>
-                    <div className="mt-4 bg-zinc-950/20 rounded-2xl sm:rounded-3xl relative overflow-hidden" style={{ height: '300px', minHeight: '300px' }}>
-                        <div className="absolute inset-0 p-2 sm:p-6" style={{ width: '100%', height: '100%' }}>
+                    <div className="mt-4 bg-zinc-950/20 rounded-2xl sm:rounded-3xl relative overflow-hidden h-[300px]">
+                        <div className="absolute inset-0 p-2 sm:p-6">
                             {stats.constancyScore?.length > 0 && (
-                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                                <ResponsiveContainer width="100%" height="100%" minHeight={100}>
                                     <AreaChart data={stats.constancyScore} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="colorConstancy" x1="0" y1="0" x2="0" y2="1">

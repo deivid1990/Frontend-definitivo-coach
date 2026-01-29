@@ -111,11 +111,19 @@ export default function TrainingSelfies() {
                 throw new Error(`Error al registrar en base de datos: ${dbError.message}`)
             }
 
-            // Éxito total: Limpieza
-            if (newSelfie.preview) URL.revokeObjectURL(newSelfie.preview)
-            setNewSelfie({ description: '', file: null, preview: null })
+            // Éxito total: Limpieza inmediata del objeto de memoria
+            if (newSelfie.preview) {
+                URL.revokeObjectURL(newSelfie.preview)
+            }
+
+            // Cerrar modal primero para liberar recursos visuales
             setShowUploadModal(false)
-            await fetchSelfies()
+            setNewSelfie({ description: '', file: null, preview: null })
+
+            // Pequeño retardo para dejar que React respire antes de la descarga de datos
+            setTimeout(() => {
+                fetchSelfies().catch(console.error)
+            }, 500)
 
         } catch (error) {
             console.error('CRASH PREVENTED en TrainingSelfies:', error)
