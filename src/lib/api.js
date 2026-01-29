@@ -1,7 +1,8 @@
 import { supabase } from './supabaseClient'
 
-// API_URL empty to use Vite Proxy which forwards /api to backend
-const API_URL = '';
+// Configuración dinámica: Usa la variable de Vercel en producción
+// En local, si no existe la variable, intentará usar el proxy relativo
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 async function getHeaders() {
     const { data: { session } } = await supabase.auth.getSession()
@@ -22,14 +23,17 @@ async function getHeaders() {
 export const api = {
     get: async (endpoint) => {
         const headers = await getHeaders()
-        const response = await fetch(`${API_URL}${endpoint}`, { headers })
+        // Eliminamos el slash extra si endpoint ya trae uno
+        const url = `${API_URL}${endpoint}`.replace(/([^:]\/)\/+/g, "$1")
+        const response = await fetch(url, { headers })
         if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`)
         return await response.json()
     },
 
     post: async (endpoint, body) => {
         const headers = await getHeaders()
-        const response = await fetch(`${API_URL}${endpoint}`, {
+        const url = `${API_URL}${endpoint}`.replace(/([^:]\/)\/+/g, "$1")
+        const response = await fetch(url, {
             method: 'POST',
             headers,
             body: JSON.stringify(body),
@@ -43,7 +47,8 @@ export const api = {
 
     put: async (endpoint, body) => {
         const headers = await getHeaders()
-        const response = await fetch(`${API_URL}${endpoint}`, {
+        const url = `${API_URL}${endpoint}`.replace(/([^:]\/)\/+/g, "$1")
+        const response = await fetch(url, {
             method: 'PUT',
             headers,
             body: JSON.stringify(body),
@@ -54,7 +59,8 @@ export const api = {
 
     delete: async (endpoint) => {
         const headers = await getHeaders()
-        const response = await fetch(`${API_URL}${endpoint}`, {
+        const url = `${API_URL}${endpoint}`.replace(/([^:]\/)\/+/g, "$1")
+        const response = await fetch(url, {
             method: 'DELETE',
             headers,
         })
