@@ -68,8 +68,9 @@ export default function TrainingSelfies() {
             setUploading(true)
             console.log('Iniciando subida de archivo:', newSelfie.file.name)
 
-            // 1. Validar extensión y generar nombre único
-            const fileExt = newSelfie.file.name.split('.').pop() || 'jpg'
+            // 1. Validar extensión (Protección especial para móviles donde file.name puede ser undefined)
+            const originalName = newSelfie.file.name || 'camera_capture.jpg';
+            const fileExt = originalName.split('.').pop() || 'jpg'
             const fileName = `${user.id}/${Date.now()}.${fileExt}`
             uploadedFilePath = `selfies/${fileName}`
 
