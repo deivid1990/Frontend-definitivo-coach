@@ -156,7 +156,7 @@ export default function Dashboard() {
                     <div className="mt-4 bg-zinc-950/20 rounded-2xl sm:rounded-3xl relative overflow-hidden" style={{ height: '300px', minHeight: '300px' }}>
                         <div className="absolute inset-0 p-2 sm:p-6" style={{ width: '100%', height: '100%' }}>
                             {stats.constancyScore?.length > 0 && (
-                                <ResponsiveContainer width="100%" height="100%">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <AreaChart data={stats.constancyScore} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="colorConstancy" x1="0" y1="0" x2="0" y2="1">

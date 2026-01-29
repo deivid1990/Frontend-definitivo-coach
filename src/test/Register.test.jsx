@@ -38,9 +38,9 @@ describe('Register Component', () => {
 
     it('debe renderizar el formulario de registro correctamente', () => {
         renderRegister()
-        expect(screen.getByRole('heading', { name: /Crear Cuenta/i })).toBeInTheDocument()
-        expect(screen.getByPlaceholderText(/Juan Pérez/i)).toBeInTheDocument()
-        expect(screen.getByPlaceholderText(/usuario@futuro.com/i)).toBeInTheDocument()
+        expect(screen.getByText(/Nueva Identidad/i)).toBeInTheDocument()
+        expect(screen.getByPlaceholderText(/JUAN PÉREZ/i)).toBeInTheDocument()
+        expect(screen.getByPlaceholderText(/USUARIO@SISTEMA.COM/i)).toBeInTheDocument()
         expect(screen.getByPlaceholderText(/••••••••/i)).toBeInTheDocument()
     })
 
@@ -49,15 +49,16 @@ describe('Register Component', () => {
 
         renderRegister()
 
-        fireEvent.change(screen.getByPlaceholderText(/Juan Pérez/i), { target: { value: 'Test User' } })
-        fireEvent.change(screen.getByPlaceholderText(/usuario@futuro.com/i), { target: { value: 'test@example.com' } })
+        fireEvent.change(screen.getByPlaceholderText(/JUAN PÉREZ/i), { target: { value: 'Test User' } })
+        fireEvent.change(screen.getByPlaceholderText(/USUARIO@SISTEMA.COM/i), { target: { value: 'test@example.com' } })
         fireEvent.change(screen.getByPlaceholderText(/••••••••/i), { target: { value: 'password123' } })
 
-        fireEvent.click(screen.getByText(/Iniciar Sistema/i))
+        const submitButton = screen.getByRole('button', { name: /INICIAR SISTEMA/i })
+        fireEvent.click(submitButton)
 
         await waitFor(() => {
             expect(mockSignUp).toHaveBeenCalledWith('test@example.com', 'password123', { full_name: 'Test User' })
-            expect(screen.getByText(/¡Sistema Inicializado!/i)).toBeInTheDocument()
+            expect(screen.getByText(/¡SISTEMA INICIALIZADO!/i)).toBeInTheDocument()
         })
     })
 
@@ -66,11 +67,12 @@ describe('Register Component', () => {
 
         renderRegister()
 
-        fireEvent.change(screen.getByPlaceholderText(/Juan Pérez/i), { target: { value: 'Test User' } })
-        fireEvent.change(screen.getByPlaceholderText(/usuario@futuro.com/i), { target: { value: 'test@example.com' } })
+        fireEvent.change(screen.getByPlaceholderText(/JUAN PÉREZ/i), { target: { value: 'Test User' } })
+        fireEvent.change(screen.getByPlaceholderText(/USUARIO@SISTEMA.COM/i), { target: { value: 'test@example.com' } })
         fireEvent.change(screen.getByPlaceholderText(/••••••••/i), { target: { value: 'password123' } })
 
-        fireEvent.click(screen.getByText(/Iniciar Sistema/i))
+        const submitButton = screen.getByRole('button', { name: /INICIAR SISTEMA/i })
+        fireEvent.click(submitButton)
 
         await waitFor(() => {
             expect(screen.getByText(/Email already in use/i)).toBeInTheDocument()
