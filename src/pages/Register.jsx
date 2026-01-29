@@ -21,22 +21,32 @@ export default function Register() {
         setError(null)
 
         try {
+            console.log('Iniciando proceso de registro para:', email)
             const { data, error: authError } = await signUp(email, password, { full_name: fullName })
 
-            if (authError) throw authError
+            if (authError) {
+                console.error('Error de Supabase Auth:', authError)
+                throw authError
+            }
+
+            console.log('Respuesta de registro:', data)
 
             if (data?.user) {
                 setIsSubmitted(true)
+            } else {
+                setError("El servidor no devolvió datos de usuario. Intente más tarde.")
             }
         } catch (err) {
-            console.error('Error de registro:', err)
+            console.error('Error crítico de registro:', err)
             const msg = err.message || ""
             if (msg.includes("User already registered")) {
                 setError('Este correo ya está registrado. Intenta iniciar sesión.')
             } else if (msg.includes("Password should be")) {
                 setError('La contraseña es demasiado débil (mínimo 6 caracteres).')
+            } else if (msg.includes("Email provider is disabled")) {
+                setError('El registro por email no está habilitado en el servidor.')
             } else {
-                setError(msg || "Error al procesar el registro en el servidor.")
+                setError(msg || "Error al procesar el registro. Verifique su conexión.")
             }
         } finally {
             setIsLoading(false)
