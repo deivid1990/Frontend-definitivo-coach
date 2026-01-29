@@ -62,51 +62,69 @@ export default function TrainingSelfies() {
         if (e) e.preventDefault()
         if (!newSelfie.file || uploading) return
 
+        let uploadedFilePath = null;
+
         try {
             setUploading(true)
+            console.log('Iniciando subida de archivo:', newSelfie.file.name)
 
-            // 1. Subir imagen a Supabase Storage
-            const fileExt = newSelfie.file.name.split('.').pop()
+            // 1. Validar extensión y generar nombre único
+            const fileExt = newSelfie.file.name.split('.').pop() || 'jpg'
             const fileName = `${user.id}/${Date.now()}.${fileExt}`
-            const filePath = `selfies/${fileName}`
+            uploadedFilePath = `selfies/${fileName}`
 
-            // Asegurarnos de que el bucket existe y el archivo se sube correctamente
+            // 2. Subir imagen al Bucket 'gym-assets'
             const { error: uploadError } = await supabase.storage
                 .from('gym-assets')
-                .upload(filePath, newSelfie.file, {
+                .upload(uploadedFilePath, newSelfie.file, {
                     cacheControl: '3600',
                     upsert: false
                 })
 
-            if (uploadError) throw uploadError
+            if (uploadError) {
+                console.error('Error de Storage:', uploadError)
+                throw new Error(`Error al subir imagen: ${uploadError.message}`)
+            }
 
-            // Obtener URL pública (Asegurándonos de que sea un string limpio)
-            const { data: { publicUrl } } = supabase.storage
+            // 3. Obtener URL pública (Formato Supabase v2)
+            const { data } = supabase.storage
                 .from('gym-assets')
-                .getPublicUrl(filePath)
+                .getPublicUrl(uploadedFilePath)
 
-            if (!publicUrl) throw new Error("No se pudo generar la URL de la imagen")
+            const publicUrl = data?.publicUrl
 
-            // 2. Guardar registro en la base de datos
-            // IMPORTANTE: Aseguramos que los campos coincidan perfectamente con el esquema
+            if (!publicUrl) throw new Error("No se pudo generar el enlace público de la imagen")
+
+            console.log('URL de imagen generada:', publicUrl)
+
+            // 4. Guardar en tabla 'entrenamiento_selfies'
             const { error: dbError } = await supabase
                 .from('entrenamiento_selfies')
                 .insert([{
                     user_id: user.id,
-                    image_url: String(publicUrl),
-                    description: String(newSelfie.description || '').trim()
+                    image_url: publicUrl,
+                    description: (newSelfie.description || '').trim()
                 }])
 
-            if (dbError) throw dbError
+            if (dbError) {
+                console.error('Error de Base de Datos:', dbError)
+                throw new Error(`Error al registrar en base de datos: ${dbError.message}`)
+            }
 
-            // Éxito: Limpiar estados y refrescar vista
+            // Éxito total: Limpieza
+            if (newSelfie.preview) URL.revokeObjectURL(newSelfie.preview)
             setNewSelfie({ description: '', file: null, preview: null })
             setShowUploadModal(false)
             await fetchSelfies()
 
         } catch (error) {
-            console.error('Crash preventer: Error en uploadSelfie:', error)
-            alert('⚠️ Error técnico: ' + (error.message || "Error desconocido al sincronizar foto"))
+            console.error('CRASH PREVENTED en TrainingSelfies:', error)
+            alert('⚠️ Error en la subida:\n' + error.message)
+
+            // Intentar limpiar el archivo subido si la base de datos falló
+            if (uploadedFilePath) {
+                await supabase.storage.from('gym-assets').remove([uploadedFilePath]).catch(e => console.error('Cleanup error:', e))
+            }
         } finally {
             setUploading(false)
         }
