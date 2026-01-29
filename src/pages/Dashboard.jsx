@@ -201,14 +201,14 @@ export default function Dashboard() {
                 </div>
 
                 {/* Accesos Rápidos */}
-                <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
                     <Link to="/rutinas" className="bg-zinc-900/40 border border-zinc-800 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-[2.5rem] hover:border-emerald-500/40 hover:bg-zinc-900/60 transition-all duration-500 group flex flex-col items-center text-center justify-center gap-3 sm:gap-5 shadow-xl hover:shadow-emerald-500/5">
                         <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg shadow-emerald-500/10">
                             <Weight size={24} className="sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
                         </div>
                         <div>
-                            <h4 className="font-black text-white uppercase tracking-tighter text-base sm:text-lg italic">Entrenar</h4>
-                            <p className="text-[8px] sm:text-[9px] text-zinc-500 font-mono tracking-[0.2em] mt-1 bg-white/5 py-1 px-2 sm:px-3 rounded-full">EJECUTAR SESIÓN</p>
+                            <h4 className="font-black text-white uppercase tracking-tighter text-base sm:text-lg italic leading-tight">Entrenar</h4>
+                            <p className="hidden sm:block text-[8px] sm:text-[9px] text-zinc-500 font-mono tracking-[0.2em] mt-1 bg-white/5 py-1 px-3 rounded-full uppercase">Ejecutar Sesión</p>
                         </div>
                     </Link>
 
@@ -217,8 +217,18 @@ export default function Dashboard() {
                             <Activity size={24} className="sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
                         </div>
                         <div>
-                            <h4 className="font-black text-white uppercase tracking-tighter text-base sm:text-lg italic">Historial</h4>
-                            <p className="text-[8px] sm:text-[9px] text-zinc-500 font-mono tracking-[0.2em] mt-1 bg-white/5 py-1 px-2 sm:px-3 rounded-full">LOG DE DATOS</p>
+                            <h4 className="font-black text-white uppercase tracking-tighter text-base sm:text-lg italic leading-tight">Registros</h4>
+                            <p className="hidden sm:block text-[8px] sm:text-[9px] text-zinc-500 font-mono tracking-[0.2em] mt-1 bg-white/5 py-1 px-3 rounded-full uppercase">Log de Datos</p>
+                        </div>
+                    </Link>
+
+                    <Link to="/perfil" className="col-span-2 sm:col-span-1 bg-zinc-900/40 border border-zinc-800 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-[2.5rem] hover:border-amber-500/40 hover:bg-zinc-900/60 transition-all duration-500 group flex flex-col items-center text-center justify-center gap-3 sm:gap-5 shadow-xl hover:shadow-amber-500/5">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-amber-500/10">
+                            <User size={24} className="sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
+                        </div>
+                        <div>
+                            <h4 className="font-black text-white uppercase tracking-tighter text-base sm:text-lg italic leading-tight">Biometría</h4>
+                            <p className="hidden sm:block text-[8px] sm:text-[9px] text-zinc-500 font-mono tracking-[0.2em] mt-1 bg-white/5 py-1 px-3 rounded-full uppercase">Perfil Físico</p>
                         </div>
                     </Link>
                 </div>

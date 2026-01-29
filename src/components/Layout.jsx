@@ -40,21 +40,21 @@ export default function Layout() {
                     </div>
                 </Link>
 
-                <nav className="flex-1 space-y-2">
+                <nav className="flex-1 space-y-2 overflow-y-auto scrollbar-hide pr-2">
                     {navItems.map((item) => {
                         const isActive = location.pathname === item.path
                         return (
                             <Link
                                 key={item.path}
                                 to={item.path}
-                                className={`flex items-center gap-3 lg:gap-4 px-3 lg:px-5 py-3 lg:py-4.5 rounded-xl transition-all duration-500 group relative overflow-hidden ${isActive
+                                className={`flex items-center gap-3 lg:gap-4 px-3 lg:px-5 py-3 lg:py-4 rounded-xl transition-all duration-500 group relative overflow-hidden ${isActive
                                     ? 'bg-indigo-600/10 text-white border border-indigo-500/20 text-shadow-neon'
                                     : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/5'
                                     }`}
                             >
-                                {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-[3px] bg-indigo-500 shadow-[0_0_15px_#6366f1]"></div>}
-                                <item.icon size={20} className={`lg:w-[26px] lg:h-[26px] transition-all duration-500 ${isActive ? 'text-indigo-400 scale-110' : 'group-hover:text-indigo-400'}`} />
-                                <span className={`text-sm lg:text-lg tracking-wide transition-all ${isActive ? 'font-black uppercase italic' : 'font-medium'}`}>{item.label}</span>
+                                {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-[3px] bg-indigo-500 shadow-[0_0_15px_#6366f1]"></div>}
+                                <item.icon size={20} className={`transition-all duration-500 ${isActive ? 'text-indigo-400 scale-110' : 'group-hover:text-indigo-400'}`} />
+                                <span className={`text-xs lg:text-sm tracking-wide transition-all ${isActive ? 'font-black uppercase italic' : 'font-medium'}`}>{item.label}</span>
                             </Link>
                         )
                     })}
