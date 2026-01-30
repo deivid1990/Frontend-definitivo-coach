@@ -47,29 +47,91 @@ export default function TrainingSelfies() {
         }
     }
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const file = e.target.files[0]
         if (file) {
-            setNewSelfie({
-                ...newSelfie,
-                file: file,
-                preview: URL.createObjectURL(file)
-            })
+            try {
+                // Generar preview temporal rápido
+                const tempPreview = URL.createObjectURL(file)
+                setNewSelfie(prev => ({ ...prev, preview: tempPreview }))
+
+                // Comprimir inmediatamente para liberar memoria
+                console.log('Comprimiendo selección inicial...')
+                const compressed = await compressImage(file)
+
+                // Limpiar preview temporal y poner el comprimido
+                URL.revokeObjectURL(tempPreview)
+                const finalPreview = URL.createObjectURL(compressed)
+
+                setNewSelfie({
+                    ...newSelfie,
+                    file: compressed,
+                    preview: finalPreview
+                })
+                console.log('Imagen lista y optimizada')
+            } catch (err) {
+                console.error('Error al procesar selección:', err)
+            }
         }
     }
 
+    const compressImage = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1200;
+                    const MAX_HEIGHT = 1200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        resolve(new File([blob], file.name || 'selfie.jpg', {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        }));
+                    }, 'image/jpeg', 0.8);
+                };
+            };
+        });
+    };
+
     const uploadSelfie = async (e) => {
-        if (e) e.preventDefault()
+        if (e && e.preventDefault) e.preventDefault()
         if (!newSelfie.file || uploading) return
 
         let uploadedFilePath = null;
 
         try {
             setUploading(true)
-            console.log('Iniciando subida de archivo:', newSelfie.file.name)
 
-            // 1. Validar extensión (Protección especial para móviles donde file.name puede ser undefined)
-            const originalName = newSelfie.file.name || 'camera_capture.jpg';
+            // Usar el archivo que ya fue comprimido en handleFileChange
+            const fileToUpload = newSelfie.file;
+            console.log('Iniciando transferencia de:', (fileToUpload.size / 1024).toFixed(2), 'KB');
+
+            // 1. Preparar ruta
+            const originalName = fileToUpload.name || 'selfie.jpg';
             const fileExt = originalName.split('.').pop() || 'jpg'
             const fileName = `${user.id}/${Date.now()}.${fileExt}`
             uploadedFilePath = `selfies/${fileName}`
@@ -77,10 +139,7 @@ export default function TrainingSelfies() {
             // 2. Subir imagen al Bucket 'gym-assets'
             const { error: uploadError } = await supabase.storage
                 .from('gym-assets')
-                .upload(uploadedFilePath, newSelfie.file, {
-                    cacheControl: '3600',
-                    upsert: false
-                })
+                .upload(uploadedFilePath, fileToUpload)
 
             if (uploadError) {
                 console.error('Error de Storage:', uploadError)
@@ -112,16 +171,14 @@ export default function TrainingSelfies() {
                 throw new Error(`Error al registrar en base de datos: ${dbError.message}`)
             }
 
-            // Éxito total: Limpieza inmediata del objeto de memoria
+            // Éxito total
             if (newSelfie.preview) {
                 URL.revokeObjectURL(newSelfie.preview)
             }
 
-            // Cerrar modal primero para liberar recursos visuales
             setShowUploadModal(false)
             setNewSelfie({ description: '', file: null, preview: null })
 
-            // Pequeño retardo para dejar que React respire antes de la descarga de datos
             setTimeout(() => {
                 fetchSelfies().catch(console.error)
             }, 500)
@@ -130,7 +187,6 @@ export default function TrainingSelfies() {
             console.error('CRASH PREVENTED en TrainingSelfies:', error)
             alert('⚠️ Error en la subida:\n' + error.message)
 
-            // Intentar limpiar el archivo subido si la base de datos falló
             if (uploadedFilePath) {
                 await supabase.storage.from('gym-assets').remove([uploadedFilePath]).catch(e => console.error('Cleanup error:', e))
             }
@@ -244,7 +300,7 @@ export default function TrainingSelfies() {
                             </button>
                         </div>
 
-                        <form onSubmit={uploadSelfie} className="space-y-6">
+                        <div className="space-y-6">
                             <div className="relative aspect-video bg-black/40 rounded-2xl sm:rounded-3xl border border-white/5 overflow-hidden group cursor-pointer">
                                 {newSelfie.preview ? (
                                     <img src={newSelfie.preview} className="w-full h-full object-contain" alt="Preview" />
@@ -257,7 +313,6 @@ export default function TrainingSelfies() {
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    capture="environment"
                                     onChange={handleFileChange}
                                     className="absolute inset-0 opacity-0 cursor-pointer"
                                 />
@@ -274,14 +329,15 @@ export default function TrainingSelfies() {
                             </div>
 
                             <button
-                                type="submit"
+                                type="button"
+                                onClick={uploadSelfie}
                                 disabled={uploading || !newSelfie.file}
                                 className="w-full py-5 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase italic tracking-[0.2em] text-xs rounded-2xl transition-all shadow-xl active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
                             >
                                 {uploading ? <Loader2 className="animate-spin" size={18} /> : <CheckCircle size={18} />}
                                 {uploading ? 'TRANSMITIENDO...' : 'SINCRONIZAR EVOLUCIÓN'}
                             </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             )}
