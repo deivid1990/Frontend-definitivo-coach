@@ -11,6 +11,12 @@
         "test": "vitest",
         "test:ui": "vitest --ui",
         "test:run": "vitest run",
+        "test:rf-01": "vitest run src/test/AICoach.test.jsx",
+        "test:rf-02": "vitest run src/test/Routines.test.jsx src/test/WorkoutSession.test.jsx",
+        "test:rf-03": "vitest run src/test/Exercises.test.jsx src/test/videoService.test.jsx",
+        "test:rf-04": "vitest run src/test/WorkoutSession.test.jsx src/test/History.test.jsx src/test/Components.test.jsx",
+        "test:rf-05": "vitest run src/test/History.test.jsx src/test/Dashboard.test.jsx src/test/Profile.test.jsx",
+        "test:rf-06": "vitest run src/test/Dashboard.test.jsx src/test/ProgressAnalysis.test.jsx",
         "coverage": "vitest run --coverage",
         "coverage:ui": "vitest --ui --coverage"
     },
