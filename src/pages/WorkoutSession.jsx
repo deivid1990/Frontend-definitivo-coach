@@ -191,6 +191,7 @@ export default function WorkoutSession() {
                                         <div className="relative">
                                             <input
                                                 type="number"
+                                                data-testid={`weight-input-${exIdx}-${setIdx}`}
                                                 value={set.weight}
                                                 onChange={(e) => updateSet(exIdx, setIdx, 'weight', e.target.value)}
                                                 className="w-full bg-black/60 text-white text-center rounded-lg sm:rounded-xl py-2 sm:py-3 border border-white/10 focus:border-indigo-500 outline-none transition-all font-mono font-bold text-xs sm:text-base"
@@ -201,6 +202,7 @@ export default function WorkoutSession() {
                                     <div className="col-span-3">
                                         <input
                                             type="number"
+                                            data-testid={`reps-input-${exIdx}-${setIdx}`}
                                             value={set.reps}
                                             onChange={(e) => updateSet(exIdx, setIdx, 'reps', e.target.value)}
                                             className="w-full bg-black/60 text-white text-center rounded-lg sm:rounded-xl py-2 sm:py-3 border border-white/10 focus:border-indigo-500 outline-none transition-all font-mono font-bold text-xs sm:text-base"
@@ -209,6 +211,7 @@ export default function WorkoutSession() {
                                     <div className="col-span-3 flex justify-center">
                                         <button
                                             onClick={() => toggleComplete(exIdx, setIdx)}
+                                            data-testid={`complete-btn-${exIdx}-${setIdx}`}
                                             className={`p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all ${set.completed ? 'bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'bg-zinc-800 text-zinc-500'}`}
                                         >
                                             <CheckCircle size={18} className="sm:w-5 sm:h-5" />

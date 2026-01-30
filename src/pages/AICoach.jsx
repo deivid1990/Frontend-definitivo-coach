@@ -147,13 +147,15 @@ export default function AICoach() {
                 {/* CHAT MODE */}
                 {mode === 'chat' && (
                     <div className="h-full flex flex-col bg-zinc-900/20 rounded-2xl sm:rounded-[2.5rem] border border-zinc-800 overflow-hidden backdrop-blur-sm">
-                        <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6 scrollbar-hide">
+                        <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6 scrollbar-hide" data-testid="chat-messages">
                             {messages.map((msg, i) => (
                                 <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-2`}>
-                                    <div className={`max-w-[90%] sm:max-w-[80%] p-3 sm:p-4 rounded-2xl sm:rounded-3xl text-xs sm:text-sm leading-relaxed ${msg.role === 'user'
-                                        ? 'bg-indigo-600 text-white rounded-tr-none'
-                                        : 'bg-zinc-800/80 text-zinc-200 rounded-tl-none border border-zinc-700'
-                                        }`}>
+                                    <div
+                                        data-testid={msg.role === 'user' ? 'user-bubble' : 'ai-bubble'}
+                                        className={`max-w-[90%] sm:max-w-[80%] p-3 sm:p-4 rounded-2xl sm:rounded-3xl text-xs sm:text-sm leading-relaxed ${msg.role === 'user'
+                                            ? 'bg-indigo-600 text-white rounded-tr-none'
+                                            : 'bg-zinc-800/80 text-zinc-200 rounded-tl-none border border-zinc-700'
+                                            }`}>
                                         {msg.content}
                                     </div>
                                 </div>
@@ -170,13 +172,21 @@ export default function AICoach() {
 
                         <form onSubmit={handleSend} className="p-2 sm:p-4 bg-black/20 border-t border-white/5 flex gap-2">
                             <input
+                                type="text"
+                                data-testid="chat-input"
                                 value={input}
-                                onChange={e => setInput(e.target.value)}
-                                placeholder="Hablar con la IA..."
-                                className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-white outline-none focus:border-indigo-500 transition-all text-xs sm:text-sm"
+                                onChange={(e) => setInput(e.target.value)}
+                                placeholder="Escribe tu duda técnica o pide una rutina..."
+                                className="flex-1 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-xs sm:text-sm"
+                                disabled={loading}
                             />
-                            <button type="submit" disabled={loading} className="bg-indigo-600 p-3 sm:p-4 rounded-xl sm:rounded-2xl text-white hover:bg-indigo-500 transition-all active:scale-95 disabled:opacity-50">
-                                <Send size={18} className="sm:w-5 sm:h-5" />
+                            <button
+                                type="submit"
+                                data-testid="chat-submit"
+                                disabled={loading || !input.trim()}
+                                className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:hover:bg-indigo-600 text-white p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
+                            >
+                                {loading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
                             </button>
                         </form>
                     </div>

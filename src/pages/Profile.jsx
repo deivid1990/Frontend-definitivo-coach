@@ -179,6 +179,7 @@ export default function Profile() {
                                 <label className="block text-zinc-500 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] ml-1">Firma del Atleta</label>
                                 <input
                                     name="full_name"
+                                    data-testid="input-name"
                                     value={profile.full_name}
                                     onChange={handleChange}
                                     className="w-full bg-black/40 border border-white/5 text-white rounded-xl sm:rounded-2xl px-4 sm:px-5 py-3 sm:py-4 focus:border-indigo-500 outline-none transition-all font-bold text-sm sm:text-base"
@@ -203,6 +204,7 @@ export default function Profile() {
                                     <input
                                         type="number"
                                         name="weight"
+                                        data-testid="input-weight"
                                         value={profile.weight}
                                         onChange={handleChange}
                                         className="w-full bg-black/40 border border-white/5 text-white rounded-xl sm:rounded-2xl px-4 sm:px-5 py-3 sm:py-4 focus:border-indigo-500 outline-none transition-all font-mono font-bold text-sm sm:text-base"
@@ -217,6 +219,7 @@ export default function Profile() {
                                     <input
                                         type="number"
                                         name="height"
+                                        data-testid="input-height"
                                         value={profile.height}
                                         onChange={handleChange}
                                         className="w-full bg-black/40 border border-white/5 text-white rounded-xl sm:rounded-2xl px-4 sm:px-5 py-3 sm:py-4 focus:border-indigo-500 outline-none transition-all font-mono font-bold text-sm sm:text-base"
@@ -241,6 +244,7 @@ export default function Profile() {
 
                             <button
                                 type="submit"
+                                data-testid="btn-save-profile"
                                 disabled={saving}
                                 className="w-full py-5 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase italic tracking-[0.15em] text-[10px] rounded-2xl transition-all active:scale-95 disabled:opacity-50 border border-white/10 shadow-xl shadow-indigo-600/20"
                             >

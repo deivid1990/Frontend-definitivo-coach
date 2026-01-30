@@ -55,12 +55,15 @@ export const AuthProvider = ({ children }) => {
         signUp: (email, password, metadata = {}) => supabase.auth.signUp({
             email,
             password,
-            options: { data: metadata }
+            options: {
+                data: metadata,
+                emailRedirectTo: 'https://frontend-definitito.vercel.app/dashboard'
+            }
         }),
         signIn: (email, password) => supabase.auth.signInWithPassword({ email, password }),
         signOut: () => supabase.auth.signOut(),
         resetPassword: (email) => supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${window.location.origin}/update-password`,
+            redirectTo: 'https://frontend-definitito.vercel.app/update-password',
         }),
         updatePassword: (new_password) => supabase.auth.updateUser({ password: new_password }),
         user,
